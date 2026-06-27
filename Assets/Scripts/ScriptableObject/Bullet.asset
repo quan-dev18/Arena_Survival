@@ -16,5 +16,5 @@ MonoBehaviour:
   bulletTag: Bullet
   fireRate: 0.5
   detectRange: 100
-  bulletCount: 1
-  spreadAngle: 0
+  bulletCount: 0
+  spreadAngle: 1

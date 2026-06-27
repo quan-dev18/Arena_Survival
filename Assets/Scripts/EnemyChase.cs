@@ -2,31 +2,33 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(SlashComboAttack))]          // tự add nếu quên
 public class EnemyChase : EnemyBase
 {
     [Header("Chase Settings")]
     [SerializeField] private float _attackRange    = 1.5f;
-    [SerializeField] private float _attackCooldown = 1f;
 
-    private NavMeshAgent _agent;
-    private Transform _target;
-    private float _attackTimer;
+    [Header("Knockback")]
+    [SerializeField] private float _knockbackForce = 20f;
+
+    private NavMeshAgent     _agent;
+    private Transform        _target;
+    private SlashComboAttack _combo;
 
     protected override void Start()
     {
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
+        _combo = GetComponent<SlashComboAttack>();
         _agent.speed = moveSpeed;
         FindTarget();
-        _attackTimer = _attackCooldown; // Fix: không attack ngay khi spawn
     }
 
-    // Gọi lại khi re-spawn từ pool
     public override void OnSpawn()
     {
         base.OnSpawn();
-        _attackTimer = _attackCooldown;
         FindTarget();
+        _combo?.ResetCombo();
 
         if (_agent != null)
         {
@@ -37,7 +39,6 @@ public class EnemyChase : EnemyBase
 
     private void FindTarget()
     {
-        // Tự tìm Player qua tag — không cần drag tay
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
             _target = player.transform;
@@ -48,8 +49,6 @@ public class EnemyChase : EnemyBase
     private void Update()
     {
         if (_target == null) return;
-
-        _attackTimer -= Time.deltaTime;
 
         float dist = Vector3.Distance(transform.position, _target.position);
 
@@ -62,7 +61,7 @@ public class EnemyChase : EnemyBase
     private void Chase()
     {
         _agent.isStopped = false;
-        _agent.speed = moveSpeed;
+        _agent.speed     = moveSpeed;
         _agent.SetDestination(_target.position);
     }
 
@@ -70,18 +69,8 @@ public class EnemyChase : EnemyBase
     {
         _agent.isStopped = true;
 
-        // Luôn nhìn về phía player khi attack
-        Vector3 dir = (_target.position - transform.position).normalized;
-        dir.y = 0f;
-        if (dir != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation(dir);
-
-        if (_attackTimer <= 0f)
-        {
-            _target.GetComponent<PlayerHealth>()?.TakeDamage(damage);
-            _attackTimer = _attackCooldown;
-            Debug.Log($"{name} attacked player for {damage} damage!");
-        }
+        KnockbackReceiver kb = _target.GetComponent<KnockbackReceiver>();
+        _combo.TryAttack(_target, damage, kb, _knockbackForce);
     }
 
     protected override void Die()
@@ -90,7 +79,6 @@ public class EnemyChase : EnemyBase
         EnemySpawner.Instance?.OnEnemyDied();
         ObjectPool.Instance.ReturnToPool("Enemy", gameObject);
     }
-    
 
     private void OnDrawGizmosSelected()
     {
