@@ -19,10 +19,13 @@ public class PlayerController : MonoBehaviour
     private Camera _mainCamera;
     private float _verticalVelocity;
 
+    [SerializeField] private Animator _animator;
+
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
+        _animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -34,8 +37,10 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         Vector2 input = _input.Move;
-        if (input == Vector2.zero) return;
-
+        bool isMoving = input != Vector2.zero;
+        _animator.SetBool("OnMove", isMoving);
+        if (!isMoving) return;
+        
         // Lấy hướng camera, bỏ trục Y
         Vector3 camForward = _mainCamera.transform.forward;
         Vector3 camRight   = _mainCamera.transform.right;
