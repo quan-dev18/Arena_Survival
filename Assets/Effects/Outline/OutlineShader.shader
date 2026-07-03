@@ -2,7 +2,7 @@ Shader "Custom/OutlineShader"
 {
     Properties
     {
-        [MainColor] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
+        [HDR] [MainColor] _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         [MainTexture] _BaseMap("Base Map", 2D) = "white" {}
 
         [Header(Outline)]
@@ -23,7 +23,7 @@ Shader "Custom/OutlineShader"
 
     SubShader
     {
-        Tags { "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "Queue" = "Geometry" }
+        Tags { "RenderType" = "Transparent" "RenderPipeline" = "UniversalPipeline" "Queue" = "Transparent" }
         LOD 100
 
         // ---- Outline Pass ----
@@ -32,8 +32,9 @@ Shader "Custom/OutlineShader"
             Name "Outline"
             Tags { "LightMode" = "SRPDefaultUnlit" }
 
+            Blend SrcAlpha OneMinusSrcAlpha
             Cull Front
-            ZWrite [_ZWrite]
+            ZWrite Off
             ZTest LEqual
             ColorMask RGB
 
@@ -112,7 +113,7 @@ Shader "Custom/OutlineShader"
                 half mask = SAMPLE_TEXTURE2D(_OutlineMask, sampler_OutlineMask, IN.uv).r;
                 clip(mask - _MaskCutoff);
 
-                return _OutlineColor;
+                return half4(_OutlineColor.rgb, _OutlineColor.a * _BaseColor.a);
             }
             ENDHLSL
         }
@@ -123,8 +124,9 @@ Shader "Custom/OutlineShader"
             Name "ForwardLit"
             Tags { "LightMode" = "UniversalForward" }
 
+            Blend SrcAlpha OneMinusSrcAlpha
             Cull Back
-            ZWrite On
+            ZWrite Off
             ZTest LEqual
 
             HLSLPROGRAM
@@ -178,6 +180,66 @@ Shader "Custom/OutlineShader"
                 #else
                 return color;
                 #endif
+            }
+            ENDHLSL
+        }
+
+        // ---- Shadow Caster Pass ----
+        Pass
+        {
+            Name "ShadowCaster"
+            Tags { "LightMode" = "ShadowCaster" }
+
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+            Cull Back
+
+            HLSLPROGRAM
+            #pragma vertex ShadowPassVertex
+            #pragma fragment ShadowPassFragment
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+                float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct Varyings
+            {
+                float4 positionHCS : SV_POSITION;
+                float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            TEXTURE2D(_OutlineMask);
+            SAMPLER(sampler_OutlineMask);
+
+            CBUFFER_START(UnityPerMaterial)
+                float _MaskCutoff;
+            CBUFFER_END
+
+            Varyings ShadowPassVertex(Attributes IN)
+            {
+                Varyings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.uv = IN.uv;
+                return OUT;
+            }
+
+            half4 ShadowPassFragment(Varyings IN) : SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(IN);
+                half mask = SAMPLE_TEXTURE2D(_OutlineMask, sampler_OutlineMask, IN.uv).r;
+                clip(mask - _MaskCutoff);
+                return 0;
             }
             ENDHLSL
         }

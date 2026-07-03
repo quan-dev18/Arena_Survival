@@ -11,11 +11,17 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Cac diem spawn")]       
     [SerializeField] private Transform[] _spawnPoints;  
 
+    [Header("Ranged Enemy")]
+    [Tooltip("Cu spawn 5 enemy can chien thi spawn 1 ban xa")]
+    [SerializeField] private int _meleePerRanged = 5;
+    [SerializeField] private string _rangedTag = "EnemyRanged";
+
     [Header("Difficulty Scale")]
     [SerializeField] private float _intervalDecreaseRate = 0.05f;  // Mỗi lần spawn giảm interval
     [SerializeField] private float _minSpawnInterval = 0.3f;       // Giới hạn tối thiểu
 
     private int _currentEnemyCount = 0;
+    private int _meleeSpawnCount = 0;
 
     private void Start()
     {
@@ -31,22 +37,33 @@ public class EnemySpawner : MonoBehaviour
             if (_currentEnemyCount < _maxEnemyAlive)
                 SpawnEnemy();
 
-            // Tăng dần độ khó
-            _spawnInterval = Mathf.Max(_minSpawnInterval, _spawnInterval - _intervalDecreaseRate);
+            float difficulty = GameManager.Instance != null
+                ? GameManager.Instance.DifficultyMultiplier
+                : 1f;
+
+            float scaledInterval = _spawnInterval - _intervalDecreaseRate * difficulty;
+            _spawnInterval = Mathf.Max(_minSpawnInterval, scaledInterval);
         }
     }
 
     private void SpawnEnemy()
     {
-        // Chọn random spawn point
         Transform spawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Length)];
 
-        GameObject enemy = ObjectPool.Instance.SpawnFromPool("Enemy", spawnPoint.position, spawnPoint.rotation);
+        bool spawnRanged = _meleeSpawnCount >= _meleePerRanged;
+        string tag = spawnRanged ? _rangedTag : "Enemy";
+
+        GameObject enemy = ObjectPool.Instance.SpawnFromPool(tag, spawnPoint.position, spawnPoint.rotation);
 
         if (enemy != null)
         {
-            enemy.GetComponent<EnemyChase>()?.OnSpawn();
+            enemy.GetComponent<EnemyBase>()?.OnSpawn();
             _currentEnemyCount++;
+
+            if (spawnRanged)
+                _meleeSpawnCount = 0;
+            else
+                _meleeSpawnCount++;
         }
     }
 
@@ -54,6 +71,13 @@ public class EnemySpawner : MonoBehaviour
     public void OnEnemyDied()
     {
         _currentEnemyCount--;
+    }
+
+    public void OnMinuteEvent(int minute)
+    {
+        _maxEnemyAlive = Mathf.Min(100, _maxEnemyAlive + 5);
+        _minSpawnInterval = Mathf.Max(0.15f, _minSpawnInterval - 0.02f);
+        _intervalDecreaseRate += 0.01f;
     }
 
     public static EnemySpawner Instance { get; private set; }

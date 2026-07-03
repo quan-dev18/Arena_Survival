@@ -1,8 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(SlashComboAttack))]          // tự add nếu quên
 public class EnemyChase : EnemyBase
 {
     [Header("Chase Settings")]
@@ -11,15 +11,33 @@ public class EnemyChase : EnemyBase
     [Header("Knockback")]
     [SerializeField] private float _knockbackForce = 20f;
 
-    private NavMeshAgent     _agent;
-    private Transform        _target;
+    [Header("Death")]
+    [SerializeField] private float _fadeDuration = 0.5f;
+
+    [Header("Exp Orb Drop")]
+    [SerializeField] private int _minOrbs = 1;
+    [SerializeField] private int _maxOrbs = 10;
+    [SerializeField] private float _expOrbValue = 10f;
+
+    protected NavMeshAgent   _agent;
+    protected Transform      _target;
     private SlashComboAttack _combo;
+
+    [SerializeField] private Animator _animator;
+    private MeshRenderer _meshRenderer;
+    private MaterialPropertyBlock _mpb;
+    private Coroutine _deathRoutine;
+
+    private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
     protected override void Start()
     {
         base.Start();
         _agent = GetComponent<NavMeshAgent>();
         _combo = GetComponent<SlashComboAttack>();
+        _animator = GetComponent<Animator>();
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _mpb = new MaterialPropertyBlock();
         _agent.speed = moveSpeed;
         FindTarget();
     }
@@ -35,6 +53,24 @@ public class EnemyChase : EnemyBase
             _agent.isStopped = false;
             _agent.ResetPath();
         }
+
+        if (_deathRoutine != null)
+        {
+            StopCoroutine(_deathRoutine);
+            _deathRoutine = null;
+        }
+
+        ResetAlpha();
+    }
+
+    private void ResetAlpha()
+    {
+        if (_meshRenderer == null) return;
+        _meshRenderer.GetPropertyBlock(_mpb);
+        Color color = _meshRenderer.sharedMaterial.GetColor(BaseColor);
+        color.a = 1f;
+        _mpb.SetColor(BaseColor, color);
+        _meshRenderer.SetPropertyBlock(_mpb);
     }
 
     private void FindTarget()
@@ -65,19 +101,77 @@ public class EnemyChase : EnemyBase
         _agent.SetDestination(_target.position);
     }
 
-    private void Attack()
+    protected virtual void Attack()
     {
         _agent.isStopped = true;
 
+        if (_combo == null) return;
+
+        float finalDamage = damage * Random.Range(1f, 1f + damageVariance);
         KnockbackReceiver kb = _target.GetComponent<KnockbackReceiver>();
-        _combo.TryAttack(_target, damage, kb, _knockbackForce);
+        _combo.TryAttack(_target, finalDamage, kb, _knockbackForce);
+    }
+
+    public override void TakeDamage(float amount)
+    {
+        _animator.SetTrigger("isHurted");
+        base.TakeDamage(amount);
     }
 
     protected override void Die()
     {
+        _animator.SetBool("OnDie", true);
         _agent.isStopped = true;
         EnemySpawner.Instance?.OnEnemyDied();
+        _deathRoutine = StartCoroutine(DeathRoutine());
+    }
+
+    private IEnumerator DeathRoutine()
+    {
+        yield return null;
+
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        while (stateInfo.normalizedTime < 1f)
+        {
+            stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            yield return null;
+        }
+
+        float elapsed = 0f;
+        _meshRenderer.GetPropertyBlock(_mpb);
+        Color originalColor = _meshRenderer.sharedMaterial.GetColor(BaseColor);
+
+        while (elapsed < _fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / _fadeDuration;
+            Color color = originalColor;
+            color.a = Mathf.Lerp(1f, 0f, t);
+            _mpb.SetColor(BaseColor, color);
+            _meshRenderer.SetPropertyBlock(_mpb);
+            yield return null;
+        }
+
+        _deathRoutine = null;
+        SpawnExpOrbs();
         ObjectPool.Instance.ReturnToPool("Enemy", gameObject);
+    }
+
+    private void SpawnExpOrbs()
+    {
+        int count = Random.Range(_minOrbs, _maxOrbs + 1);
+        ObjectPool pool = ObjectPool.Instance;
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 offset = Random.insideUnitSphere * 1f;
+            offset.y = 0f;
+            GameObject orb = pool.SpawnFromPool("ExpOrb", transform.position + offset, Quaternion.identity);
+            if (orb != null)
+            {
+                orb.GetComponent<ExpOrb>().xpValue = _expOrbValue;
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

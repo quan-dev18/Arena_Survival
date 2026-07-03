@@ -21,6 +21,13 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Animator _animator;
 
+    public float MoveSpeed => _moveSpeed;
+
+    public void AddMoveSpeed(float bonus)
+    {
+        _moveSpeed += bonus;
+    }
+
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();

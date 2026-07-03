@@ -29,8 +29,8 @@ public class InputManager : MonoBehaviour
 
     }
 
-    public void OnEnable()  { _actionMap?.Enable(); }
-    public void OnDisable() { _actionMap?.Disable(); }
+    private void OnEnable()  { _actionMap?.Enable(); }
+    private void OnDisable() { _actionMap?.Disable(); }
 
     void OnMove(InputAction.CallbackContext ctx)  => Move = ctx.ReadValue<Vector2>();
 }

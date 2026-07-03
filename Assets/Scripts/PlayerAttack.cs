@@ -12,6 +12,7 @@ public class PlayerAttack : MonoBehaviour
 
     private float _nextFireTime;
     private Transform _currentTarget;
+    private int _bulletBonus;
 
     private void Update()
     {
@@ -31,34 +32,39 @@ public class PlayerAttack : MonoBehaviour
         _nextFireTime = 0f;
     }
 
+    public void AddBulletBonus(int bonus)
+    {
+        _bulletBonus += bonus;
+    }
+
     private void TryShoot()
     {
         if (_currentWeapon == null) return;
         if (Time.time < _nextFireTime) return;
 
-        _nextFireTime = Time.time + _currentWeapon.fireRate;
+        _nextFireTime = Time.time + _currentWeapon.fireRate * AugmentManager.FireRateMultiplier;
 
         ShootBullets();
     }
 
     private void ShootBullets()
     {
-        int count = _currentWeapon.bulletCount;
+        int count = _currentWeapon.bulletCount + _bulletBonus;
         float spread = _currentWeapon.spreadAngle;
 
-        // Tính góc bắt đầu để các viên đạn đối xứng
-        float startAngle = -spread * (count - 1) / 2f;
+        Vector3 pos = _firePoint.position;
+        Quaternion baseRot = _weaponPivot.rotation;
+        ObjectPool pool = ObjectPool.Instance;
+        string tag = _currentWeapon.bulletTag;
+
+        float startAngle = -spread * (count - 1) * 0.5f;
+        Quaternion step = Quaternion.Euler(0f, spread, 0f);
+        Quaternion rot = baseRot * Quaternion.Euler(0f, startAngle, 0f);
 
         for (int i = 0; i < count; i++)
         {
-            float angle = startAngle + spread * i;
-            Quaternion rot = _firePoint.rotation * Quaternion.Euler(0, angle, 0);
-
-            ObjectPool.Instance.SpawnFromPool(
-                _currentWeapon.bulletTag,
-                _firePoint.position,
-                rot
-            );
+            pool.SpawnFromPool(tag, pos, rot);
+            rot *= step;
         }
     }
 

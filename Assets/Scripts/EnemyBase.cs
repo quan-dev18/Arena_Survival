@@ -6,13 +6,15 @@ public abstract class EnemyBase : MonoBehaviour
     public float maxHealth = 100;
     public float moveSpeed = 5;
     public float damage = 10;
+    public float damageVariance = 0.3f;
 
     protected float currentHealth;
+    protected bool _isDead;
 
-    // Gọi khi spawn từ pool (thay thế Start cho logic reset)
     public virtual void OnSpawn()
     {
         currentHealth = maxHealth;
+        _isDead = false;
     }
 
     protected virtual void Start()
@@ -22,14 +24,17 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void TakeDamage(float amount)
     {
+        if (_isDead) return;
+
         currentHealth -= amount;
+        DamagePopUp.Create(transform.position + Vector3.up * 1.5f, Mathf.RoundToInt(amount));
         if (currentHealth <= 0)
             Die();
     }
 
-    // Subclass override để return pool thay vì Destroy
     protected virtual void Die()
     {
+        _isDead = true;
         Destroy(gameObject);
     }
 }

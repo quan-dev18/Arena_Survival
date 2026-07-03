@@ -370,6 +370,7 @@ GameObject:
   - component: {fileID: 5548010517177220160}
   - component: {fileID: -5985742086993755652}
   - component: {fileID: 5052613733798713450}
+  - component: {fileID: -8317553425311743804}
   m_Layer: 3
   m_Name: 'Robot[Enemy]'
   m_TagString: Enemies
@@ -514,6 +515,8 @@ MonoBehaviour:
   damage: 10
   _attackRange: 1.5
   _knockbackForce: 20
+  _fadeDuration: 0.5
+  _animator: {fileID: -8317553425311743804}
 --- !u!114 &-5985742086993755652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,7 +546,30 @@ MonoBehaviour:
   _comboCooldown: 1.2
   _speedMultiplier: 0.85
   _minCooldown: 0.35
+  _damageDelay: 0.08
   _slashVFX:
   - {fileID: 7687658051477125816}
   - {fileID: 5473734800865546444}
   - {fileID: 7121569367148613437}
+--- !u!95 &-8317553425311743804
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8953233590468736088}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c3b713624005640a1a1c9f1cad9ba7ac, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
