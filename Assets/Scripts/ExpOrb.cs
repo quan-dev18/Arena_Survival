@@ -4,8 +4,8 @@ using UnityEngine;
 public class ExpOrb : MonoBehaviour
 {
     public float xpValue = 10f;
-
     public Rigidbody Rb { get; private set; }
+    public bool IsCollected { get; private set; } 
 
     private ObjectPool _pool;
 
@@ -17,15 +17,25 @@ public class ExpOrb : MonoBehaviour
 
     private void OnEnable()
     {
+        //reset pool
+        IsCollected = false;
         Rb.isKinematic = false;
         Rb.linearVelocity = Vector3.zero;
         Rb.angularVelocity = Vector3.zero;
     }
 
+    public bool TryMarkCollected()
+    {
+        if (IsCollected) return false;
+        IsCollected = true;
+        return true;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
-            return;
+        if (!collision.gameObject.CompareTag("Player")) return;
+        //block double
+        if (!TryMarkCollected()) return;
 
         Rb.isKinematic = true;
         PlayerExperience playerExp = collision.gameObject.GetComponentInChildren<PlayerExperience>();

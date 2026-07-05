@@ -27,6 +27,7 @@ public class EnemyChase : EnemyBase
     private MeshRenderer _meshRenderer;
     private MaterialPropertyBlock _mpb;
     private Coroutine _deathRoutine;
+    private KnockbackReceiver _targetKnockback;
 
     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
@@ -77,9 +78,14 @@ public class EnemyChase : EnemyBase
     {
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
+        {
             _target = player.transform;
+            _targetKnockback = player.GetComponent<KnockbackReceiver>();
+        }
         else
-            Debug.LogWarning("EnemyChase: Không tìm thấy Player! Kiểm tra tag.");
+        {
+            Debug.LogWarning("EnemyChase: None Player lives");
+        }
     }
 
     private void Update()
@@ -104,12 +110,10 @@ public class EnemyChase : EnemyBase
     protected virtual void Attack()
     {
         _agent.isStopped = true;
-
         if (_combo == null) return;
 
         float finalDamage = damage * Random.Range(1f, 1f + damageVariance);
-        KnockbackReceiver kb = _target.GetComponent<KnockbackReceiver>();
-        _combo.TryAttack(_target, finalDamage, kb, _knockbackForce);
+        _combo.TryAttack(_target, finalDamage, _targetKnockback, _knockbackForce);
     }
 
     public override void TakeDamage(float amount)
@@ -131,9 +135,13 @@ public class EnemyChase : EnemyBase
         yield return null;
 
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        while (stateInfo.normalizedTime < 1f)
+        float safetyTimer = 0f;
+        const float maxWait = 5f;
+
+        while (stateInfo.normalizedTime < 1f && safetyTimer < maxWait)
         {
             stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            safetyTimer += Time.deltaTime;
             yield return null;
         }
 

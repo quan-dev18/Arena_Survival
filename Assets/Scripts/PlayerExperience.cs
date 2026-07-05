@@ -58,7 +58,10 @@ public class PlayerExperience : MonoBehaviour
 
             if (dist <= _collectDistance)
             {
-                CollectOrb(orb);
+                if (orb.TryMarkCollected()) 
+                    CollectOrb(orb);
+                else
+                    _trackedOrbs.RemoveAt(i);
             }
             else
             {
@@ -96,18 +99,24 @@ public class PlayerExperience : MonoBehaviour
 
     private void CheckLevelUp()
     {
-        while (_currentXP >= _xpToNextLevel)
+        int safetyGuard = 0;
+        while (_currentXP >= _xpToNextLevel && safetyGuard < 1000)
         {
             _currentXP -= _xpToNextLevel;
             _currentLevel++;
             _xpToNextLevel = GetXPRequiredForLevel(_currentLevel);
             OnLevelUp?.Invoke(_currentLevel);
+            safetyGuard++;
         }
+
+        if (safetyGuard >= 1000)
+            Debug.LogError("CheckLevelUp: Exceeded safety guard limit. Possible infinite loop in level up logic.");
     }
 
     private float GetXPRequiredForLevel(int level)
     {
-        return _baseXPToLevel * _levelCurve.Evaluate(level);
+        float xp = _baseXPToLevel * _levelCurve.Evaluate(level);
+        return Mathf.Max(1f, xp);
     }
 
     private void OnDrawGizmosSelected()

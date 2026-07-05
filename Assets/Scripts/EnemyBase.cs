@@ -10,6 +10,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected float currentHealth;
     protected bool _isDead;
+    
 
     public virtual void OnSpawn()
     {

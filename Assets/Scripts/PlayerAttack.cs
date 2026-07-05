@@ -13,6 +13,8 @@ public class PlayerAttack : MonoBehaviour
     private float _nextFireTime;
     private Transform _currentTarget;
     private int _bulletBonus;
+    private static readonly int _enemyMask = LayerMask.GetMask("Enemy");
+    private readonly Collider[] _hitBuffer = new Collider[32];
 
     private void Update()
     {
@@ -25,7 +27,6 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // Đổi vũ khí runtime (gọi từ item pickup, UI, etc.)
     public void EquipWeapon(WeaponData newWeapon)
     {
         _currentWeapon = newWeapon;
@@ -70,25 +71,21 @@ public class PlayerAttack : MonoBehaviour
 
     private Transform FindNearestEnemy()
     {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            _currentWeapon != null ? _currentWeapon.detectRange : 10f,
-            LayerMask.GetMask("Enemy")
-        );
+        float range = _currentWeapon != null ? _currentWeapon.detectRange : 10f;
+        int count = Physics.OverlapSphereNonAlloc(transform.position, range, _hitBuffer, _enemyMask);
 
         Transform nearest = null;
         float minDist = float.MaxValue;
 
-        foreach (var hit in hits)
+        for (int i = 0; i < count; i++)
         {
-            float dist = Vector3.Distance(transform.position, hit.transform.position);
+            float dist = Vector3.Distance(transform.position, _hitBuffer[i].transform.position);
             if (dist < minDist)
             {
                 minDist = dist;
-                nearest = hit.transform;
+                nearest = _hitBuffer[i].transform;
             }
         }
-
         return nearest;
     }
 

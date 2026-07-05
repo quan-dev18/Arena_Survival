@@ -30,7 +30,7 @@ public class TimerUI : MonoBehaviour
     private void Update()
     {
         if (_gameOver) return;
-        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
+        if (GameManager.Instance == null || GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
 
         _elapsed += Time.deltaTime;
 
