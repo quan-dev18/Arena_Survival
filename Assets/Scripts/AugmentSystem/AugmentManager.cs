@@ -90,7 +90,7 @@ public class AugmentManager : MonoBehaviour
                 break;
 
             case AugmentData.AugmentType.IncreaseFireRate:
-                FireRateMultiplier -= augment.value;
+                FireRateMultiplier = Mathf.Max(0.1f, FireRateMultiplier - augment.value);
                 break;
 
             case AugmentData.AugmentType.IncreaseBulletCount:

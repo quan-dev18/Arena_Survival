@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
-        _animator = GetComponent<Animator>();
+        if(_animator == null) _animator = GetComponent<Animator>();
     }
 
     private void Update()

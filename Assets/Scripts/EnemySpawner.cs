@@ -34,12 +34,13 @@ public class EnemySpawner : MonoBehaviour
         {
             yield return new WaitForSeconds(_spawnInterval);
 
+            if (GameManager.Instance == null || GameManager.Instance.CurrentState != GameManager.GameState.Playing)
+                continue;
+
             if (_currentEnemyCount < _maxEnemyAlive)
                 SpawnEnemy();
 
-            float difficulty = GameManager.Instance != null
-                ? GameManager.Instance.DifficultyMultiplier
-                : 1f;
+            float difficulty = GameManager.Instance.DifficultyMultiplier;
 
             float scaledInterval = _spawnInterval - _intervalDecreaseRate * difficulty;
             _spawnInterval = Mathf.Max(_minSpawnInterval, scaledInterval);

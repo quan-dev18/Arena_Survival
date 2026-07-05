@@ -2280,7 +2280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &955150253
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3171,8 +3171,8 @@ MonoBehaviour:
   _timerUI: {fileID: 1134359402}
   _gameOverUI: {fileID: 1700474825}
   _gamePauseUI: {fileID: 203722783}
-  _animator: {fileID: 0}
-  _timeCountDownTMP: {fileID: 0}
+  _animator: {fileID: 955150254}
+  _timeCountDownTMP: {fileID: 955150255}
   _countDownTime: 3
 --- !u!4 &1328051887
 Transform:
