@@ -26,10 +26,11 @@ public class PlayerExperience : MonoBehaviour
     public float CurrentXP => _currentXP;
     public float XPToNextLevel => _xpToNextLevel;
     public float XPNormalized => _currentXP / _xpToNextLevel;
+    public float CollectionRadius => _collectionRadius;
 
-    public void AddCollectionRadius(float bonus)
+    public void SetCollectionRadius(float radius)
     {
-        _collectionRadius += bonus;
+        _collectionRadius = radius;
         _collectionZone.radius = _collectionRadius;
     }
 

@@ -17,8 +17,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private string _rangedTag = "EnemyRanged";
 
     [Header("Difficulty Scale")]
-    [SerializeField] private float _intervalDecreaseRate = 0.05f;  // Mỗi lần spawn giảm interval
-    [SerializeField] private float _minSpawnInterval = 0.3f;       // Giới hạn tối thiểu
+    [SerializeField] private float _intervalDecreaseRate = 0.05f;  
+    [SerializeField] private float _minSpawnInterval = 0.3f;    
 
     private int _currentEnemyCount = 0;
     private int _meleeSpawnCount = 0;
@@ -74,7 +74,7 @@ public class EnemySpawner : MonoBehaviour
         _currentEnemyCount--;
     }
 
-    public void OnMinuteEvent(int minute)
+    public void OnTimeEvent(int minute)
     {
         _maxEnemyAlive = Mathf.Min(100, _maxEnemyAlive + 5);
         _minSpawnInterval = Mathf.Max(0.15f, _minSpawnInterval - 0.02f);

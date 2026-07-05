@@ -19,10 +19,11 @@ public class PlayerHealth : MonoBehaviour
     public float CurrentHealth => _currentHealth;
     public System.Action<float, float> OnHealthChanged;
 
-    public void AddMaxHealth(float bonus)
+    public void SetMaxHealth(float maxHealth)
     {
-        _maxHealth += bonus;
-        _currentHealth += bonus;
+        float ratio = _currentHealth / _maxHealth;
+        _maxHealth = maxHealth;
+        _currentHealth = _maxHealth * ratio;
         OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
     }
 
@@ -48,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
         if (_isDead) return;
 
         _animator.SetTrigger("isHurted");
-        DamagePopUp.Create(transform.position + Vector3.up * 1.5f, Mathf.RoundToInt(amount), Color.red);
+        DamagePopUp.Create(transform.position + Vector3.up * 1.5f, Mathf.RoundToInt(amount),Color.black);
 
         _currentHealth -= amount;
         OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
@@ -73,7 +74,25 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        if (_isDead || !_isFlashing) return;
+        if (_isDead) return;
+
+        ApplyHealRegen();
+        UpdateFlash();
+    }
+
+    private void ApplyHealRegen()
+    {
+        float regen = _maxHealth * AugmentManager.HealRegenPercent / 100f * Time.deltaTime;
+        if (regen > 0f)
+        {
+            _currentHealth = Mathf.Min(_currentHealth + regen, _maxHealth);
+            OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+        }
+    }
+
+    private void UpdateFlash()
+    {
+        if (!_isFlashing) return;
 
         _flashTimer -= Time.deltaTime;
         float t = Mathf.Clamp01(_flashTimer / _flashDuration);

@@ -12,6 +12,12 @@ public class DamagePopUp : MonoBehaviour
     {
         _textMesh = GetComponent<TextMeshPro>();
         _pool = ObjectPool.Instance;
+
+        if (_textMesh != null)
+        {
+            if (_textMesh.fontMaterial.HasProperty("_FaceColor"))
+                _textMesh.fontMaterial.SetColor("_FaceColor", Color.white);
+        }
     }
 
     private void OnEnable()
@@ -23,6 +29,7 @@ public class DamagePopUp : MonoBehaviour
     public void SetUp(int damage, Color color)
     {
         _textMesh.SetText(damage.ToString());
+        _textMesh.enableVertexGradient = false; // force solid color, ignore any gradient preset on the prefab
         _textMesh.color = color;
     }
 

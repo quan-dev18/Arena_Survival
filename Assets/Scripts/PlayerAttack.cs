@@ -13,8 +13,13 @@ public class PlayerAttack : MonoBehaviour
     private float _nextFireTime;
     private Transform _currentTarget;
     private int _bulletBonus;
-    private static readonly int _enemyMask = LayerMask.GetMask("Enemy");
+    private int _enemyMask;
     private readonly Collider[] _hitBuffer = new Collider[32];
+
+    void Awake()
+    {
+        _enemyMask = LayerMask.GetMask("Enemy");
+    }
 
     private void Update()
     {
@@ -43,7 +48,8 @@ public class PlayerAttack : MonoBehaviour
         if (_currentWeapon == null) return;
         if (Time.time < _nextFireTime) return;
 
-        _nextFireTime = Time.time + _currentWeapon.fireRate * AugmentManager.FireRateMultiplier;
+        float asMultiplier = 1 + AugmentManager.AttackSpeedPercent / 100f;
+        _nextFireTime = Time.time + _currentWeapon.fireRate / asMultiplier;
 
         ShootBullets();
     }

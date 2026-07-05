@@ -54,7 +54,7 @@ public class AugmentSelectionUI : MonoBehaviour
         {
             _data = data;
             gameObject.SetActive(true);
-            text.text = $"{data.augmentName}\n{data.description}";
+            text.text = $"{data.augmentName}";
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => callback(_data));
         }

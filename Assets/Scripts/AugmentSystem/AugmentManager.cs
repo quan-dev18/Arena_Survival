@@ -15,9 +15,20 @@ public class AugmentManager : MonoBehaviour
     private PlayerAttack _playerAttack;
     private PlayerExperience _playerExperience;
 
-    // Cac static modifier duoc ap dung toan cuc boi augment
-    public static float DamageMultiplier { get; private set; } = 1f;
-    public static float FireRateMultiplier { get; private set; } = 1f;
+    // Cac static percent bonus ap dung toan cuc boi augment
+    public static float DamagePercent { get; private set; } = 0f;
+    public static float AttackSpeedPercent { get; private set; } = 0f;
+    public static float HealRegenPercent { get; private set; } = 0f;
+
+    // Base values
+    private float _baseMoveSpeed;
+    private float _baseMaxHealth;
+    private float _baseCollectionRadius;
+
+    // Accumulated percent bonuses (non-static)
+    private float _moveSpeedPercent;
+    private float _maxHealthPercent;
+    private float _collectionRadiusPercent;
 
     private void Start()
     {
@@ -25,6 +36,13 @@ public class AugmentManager : MonoBehaviour
         _playerHealth = FindAnyObjectByType<PlayerHealth>();
         _playerAttack = FindAnyObjectByType<PlayerAttack>();
         _playerExperience = FindAnyObjectByType<PlayerExperience>();
+
+        if (_playerController != null)
+            _baseMoveSpeed = _playerController.MoveSpeed;
+        if (_playerHealth != null)
+            _baseMaxHealth = _playerHealth.MaxHealth;
+        if (_playerExperience != null)
+            _baseCollectionRadius = _playerExperience.CollectionRadius;
 
         if (_playerExperience != null)
             _playerExperience.OnLevelUp += OnPlayerLevelUp;
@@ -49,19 +67,34 @@ public class AugmentManager : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    // Lay N augment ngau nhien tu danh sach
+    // Lay N augment ngau nhien theo weight tu danh sach
     private AugmentData[] GetRandomOptions(int count)
     {
         if (_allAugments == null || _allAugments.Length == 0)
             return new AugmentData[count];
 
-        // Copy danh sach de shuffle
         List<AugmentData> pool = new List<AugmentData>(_allAugments);
         AugmentData[] result = new AugmentData[count];
 
         for (int i = 0; i < count && pool.Count > 0; i++)
         {
-            int idx = Random.Range(0, pool.Count);
+            float totalWeight = 0f;
+            foreach (var a in pool)
+                totalWeight += a.spawnWeight;
+
+            float rand = Random.Range(0f, totalWeight);
+            float cumulative = 0f;
+            int idx = 0;
+            for (int j = 0; j < pool.Count; j++)
+            {
+                cumulative += pool[j].spawnWeight;
+                if (rand < cumulative)
+                {
+                    idx = j;
+                    break;
+                }
+            }
+
             result[i] = pool[idx];
             pool.RemoveAt(idx);
         }
@@ -74,23 +107,25 @@ public class AugmentManager : MonoBehaviour
         switch (augment.type)
         {
             case AugmentData.AugmentType.IncreaseMoveSpeed:
-                _playerController.AddMoveSpeed(augment.value);
+                _moveSpeedPercent += augment.value;
+                _playerController.SetMoveSpeed(_baseMoveSpeed * (1 + _moveSpeedPercent / 100f));
                 break;
 
             case AugmentData.AugmentType.IncreaseMaxHealth:
-                _playerHealth.AddMaxHealth(augment.value);
+                _maxHealthPercent += augment.value;
+                _playerHealth.SetMaxHealth(_baseMaxHealth * (1 + _maxHealthPercent / 100f));
                 break;
 
             case AugmentData.AugmentType.Heal:
-                _playerHealth.Heal(augment.value);
+                _playerHealth.Heal(_playerHealth.MaxHealth * augment.value / 100f);
                 break;
 
             case AugmentData.AugmentType.IncreaseDamage:
-                DamageMultiplier += augment.value;
+                DamagePercent += augment.value;
                 break;
 
             case AugmentData.AugmentType.IncreaseFireRate:
-                FireRateMultiplier = Mathf.Max(0.1f, FireRateMultiplier - augment.value);
+                AttackSpeedPercent += augment.value;
                 break;
 
             case AugmentData.AugmentType.IncreaseBulletCount:
@@ -98,7 +133,12 @@ public class AugmentManager : MonoBehaviour
                 break;
 
             case AugmentData.AugmentType.IncreaseCollectionRadius:
-                _playerExperience.AddCollectionRadius(augment.value);
+                _collectionRadiusPercent += augment.value;
+                _playerExperience.SetCollectionRadius(_baseCollectionRadius * (1 + _collectionRadiusPercent / 100f));
+                break;
+
+            case AugmentData.AugmentType.HealRegen:
+                HealRegenPercent = Mathf.Min(5f, HealRegenPercent + augment.value);
                 break;
         }
     }

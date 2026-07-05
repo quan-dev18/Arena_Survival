@@ -34,7 +34,7 @@ Material:
     - _HealthPercent: 0
     - _LowThreshold: 0.25
     - _MidThreshold: 0.6
-    - _PulseEnabled: 0
+    - _PulseEnabled: 1
     - _PulseIntensity: 0.15
     - _PulseSpeed: 4
     - _PulseThreshold: 0.35

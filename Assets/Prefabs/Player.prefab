@@ -5517,7 +5517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b638c0d2c65e91e8963243d14e2faf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  _maxHealth: 100
+  _maxHealth: 300
   _animator: {fileID: 2614150810084024362}
   _meshRenderer: {fileID: 8832034446332032764}
   _flashColor: {r: 1, g: 0, b: 0, a: 1}

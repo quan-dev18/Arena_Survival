@@ -23,9 +23,9 @@ public class PlayerController : MonoBehaviour
 
     public float MoveSpeed => _moveSpeed;
 
-    public void AddMoveSpeed(float bonus)
+    public void SetMoveSpeed(float speed)
     {
-        _moveSpeed += bonus;
+        _moveSpeed = speed;
     }
 
     private void Awake()

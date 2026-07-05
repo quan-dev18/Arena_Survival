@@ -78,6 +78,6 @@ public class Bullet : MonoBehaviour
 
     private float CalcDamage()
     {
-        return _damage * Random.Range(1f, 1f + _damageVariance) * AugmentManager.DamageMultiplier;
+        return _damage * (1 + AugmentManager.DamagePercent / 100f) * Random.Range(1f, 1f + _damageVariance);
     }
 }
