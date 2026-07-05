@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   weaponName: YellowBulet
   bulletTag: Bullet
-  fireRate: 0.1
+  fireRate: 10
   detectRange: 12
   bulletCount: 1
   spreadAngle: 1

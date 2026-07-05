@@ -2,8 +2,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.PlayerLoop;
+using TMPro;
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private InputManager _inputManager;
+    private bool _isPause = false;
     [Header("Timer")]
     [SerializeField] private float _eventInterval = 60f;
 
@@ -18,7 +22,8 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TimerUI _timerUI;
     [SerializeField] private GameObject _gameOverUI;
-    [SerializeField] private Button _playAgainButton;
+    
+    [SerializeField] private GameObject _gamePauseUI;
 
     private WaitForSeconds _delay3s = new WaitForSeconds(3f);
 
@@ -32,6 +37,12 @@ public class GameManager : MonoBehaviour
     public event System.Action<int> OnMinuteEvent;
     public event System.Action OnGameOver;
 
+    [Header("TimeAnimation")]
+    [SerializeField] private Animator _animator;
+    [SerializeField] private TextMeshPro _timeCountDownTMP;
+    [SerializeField] private float _countDownTime = 3f;
+    private bool isGameStart = false;
+
     
     private void Awake()
     {
@@ -41,13 +52,20 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         _gameOverUI.SetActive(false);
-        if (_playAgainButton != null)
-            _playAgainButton.onClick.AddListener(RestartGame);
+        _gamePauseUI.SetActive(false);
+        _inputManager.OnPause += TogglePause;
+    }
+
+    private void OnDestroy()
+    {
+        if (_inputManager != null)
+            _inputManager.OnPause -= TogglePause;
     }
 
     private void Update()
     {
         if (IsGameOver) return;
+        // if(!isGameStart) return;
 
         SurvivalTime += Time.deltaTime;
 
@@ -58,6 +76,7 @@ public class GameManager : MonoBehaviour
             OnMinuteEvent?.Invoke(minute);
             TriggerMinuteEvent(minute);
         }
+        _gamePauseUI.SetActive(_isPause);
     }
 
     public void OnPlayerDied()
@@ -75,6 +94,7 @@ public class GameManager : MonoBehaviour
         if (_gameOverUI != null)
             StartCoroutine(ShowGameOverDelayed());
         OnGameOver?.Invoke();
+        
     }
 
     private IEnumerator ShowGameOverDelayed()
@@ -90,8 +110,34 @@ public class GameManager : MonoBehaviour
             spawner.OnMinuteEvent(minute);
     }
 
+    void TogglePause()
+    {
+        _isPause = !_isPause;
+        Time.timeScale = _isPause ? 0 : 1f;
+    }
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1f;
+        _isPause = false;
+        SceneManager.LoadScene("MainGame");
     }
+
+    public void ResumeGame()
+    {
+        _gamePauseUI.SetActive(false);
+        _isPause = false;
+        Time.timeScale = 1f;
+    }
+
+    public void LoadMenu()
+    {
+        Time.timeScale = 1f;
+        _isPause = false;
+        SceneManager.LoadScene("Menu");
+    }
+
+    // public void GameStart()
+    // {
+    //     isGameStart = true;
+    // }
 }
