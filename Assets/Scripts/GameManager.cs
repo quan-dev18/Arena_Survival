@@ -68,11 +68,16 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Bullet.EnemySpeedMultiplier = 1f;
+
         if (_gameOverUI != null) _gameOverUI.SetActive(false);
         if (_gamePauseUI != null) _gamePauseUI.SetActive(false);
 
         if (_inputManager != null)
             _inputManager.OnPause += TogglePause;
+
+        if (_timerUI != null)
+            _timerUI.OnGameOver += OnTimeOut;
 
         ChangeState(GameState.CountdownToStart);
     }
@@ -81,6 +86,8 @@ public class GameManager : MonoBehaviour
     {
         if (_inputManager != null)
             _inputManager.OnPause -= TogglePause;
+        if (_timerUI != null)
+            _timerUI.OnGameOver -= OnTimeOut;
     }
 
     private void Update()
@@ -163,6 +170,19 @@ public class GameManager : MonoBehaviour
             _timerUI.enabled = false;
         if (_gameOverUI != null)
             StartCoroutine(ShowGameOverDelayed());
+
+        OnGameOver?.Invoke();
+    }
+
+    private void OnTimeOut()
+    {
+        if (CurrentState == GameState.GameOver) return;
+
+        ChangeState(GameState.GameOver);
+        if (_timerUI != null)
+            _timerUI.enabled = false;
+        if (_gameOverUI != null)
+            _gameOverUI.SetActive(true);
 
         OnGameOver?.Invoke();
     }

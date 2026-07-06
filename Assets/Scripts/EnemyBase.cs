@@ -10,7 +10,17 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected float currentHealth;
     protected bool _isDead;
-    
+
+    private float _originalMaxHealth;
+    private float _originalMoveSpeed;
+    private float _originalDamage;
+
+    protected virtual void Awake()
+    {
+        _originalMaxHealth = maxHealth;
+        _originalMoveSpeed = moveSpeed;
+        _originalDamage = damage;
+    }
 
     public virtual void OnSpawn()
     {
@@ -21,6 +31,22 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void Start()
     {
         currentHealth = maxHealth;
+    }
+
+    public virtual void ScaleStats(float multiplier)
+    {
+        maxHealth *= multiplier;
+        currentHealth *= multiplier;
+        moveSpeed *= multiplier;
+        damage *= multiplier;
+    }
+
+    public void ApplyStatsMultiplier(float multiplier)
+    {
+        maxHealth = _originalMaxHealth * multiplier;
+        currentHealth = maxHealth;
+        moveSpeed = _originalMoveSpeed * multiplier;
+        damage = _originalDamage * multiplier;
     }
 
     public virtual void TakeDamage(float amount)

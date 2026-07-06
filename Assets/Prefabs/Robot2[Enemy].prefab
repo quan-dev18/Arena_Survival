@@ -201,10 +201,10 @@ MonoBehaviour:
   moveSpeed: 5
   damage: 10
   damageVariance: 0.3
-  _attackRange: 10
+  _attackRange: 15
   _knockbackForce: 20
   _fadeDuration: 0.5
-  _minOrbs: 1
+  _minOrbs: 5
   _maxOrbs: 10
   _expOrbValue: 10
   _animator: {fileID: -8317553425311743804}

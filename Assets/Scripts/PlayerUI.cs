@@ -63,7 +63,7 @@ public class PlayerUI : MonoBehaviour
         if (_healthFill == null) return;
 
         float percent = Mathf.Clamp01(current / max);
-        _healthFill.fillAmount = percent;
+        _healthFill.fillAmount = 1f - percent;
         _healthFill.color = GetGradientColor(percent);
 
         if (_healthMaterial != null)

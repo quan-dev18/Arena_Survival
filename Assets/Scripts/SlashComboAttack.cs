@@ -19,6 +19,10 @@ public class SlashComboAttack : MonoBehaviour
     private bool _inCombo;
     private float _currentCooldown;
 
+    private float _originalHitInterval;
+    private float _originalComboCooldown;
+    private float _originalMinCooldown;
+
     private int ComboLength => _slashVFX is { Length: > 0 } ? _slashVFX.Length : 2;
 
     public void TryAttack(Transform target, float damage, KnockbackReceiver knockback = null, float knockbackForce = 20f)
@@ -74,10 +78,20 @@ public class SlashComboAttack : MonoBehaviour
 
     private void Awake()
     {
+        _originalHitInterval = _hitInterval;
+        _originalComboCooldown = _comboCooldown;
+        _originalMinCooldown = _minCooldown;
         _currentCooldown = _comboCooldown;
         if (_slashVFX == null) return;
         foreach (var vfx in _slashVFX)
             if (vfx != null) vfx.Stop();
+    }
+
+    public void ApplySpeedMultiplier(float multiplier)
+    {
+        _hitInterval = _originalHitInterval * multiplier;
+        _comboCooldown = _originalComboCooldown * multiplier;
+        _minCooldown = _originalMinCooldown * multiplier;
     }
 
     private void LookAt(Transform target)

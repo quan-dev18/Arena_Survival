@@ -7,11 +7,18 @@ public class GameOverUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (GameManager.Instance == null) return;
+        if (_survivalTimeText == null) return;
 
-        float time = GameManager.Instance.SurvivalTime;
-        int minutes = Mathf.FloorToInt(time / 60f);
-        int seconds = Mathf.FloorToInt(time % 60f);
-        _survivalTimeText.text = $"You survived for {minutes:D2}:{seconds:D2}";
+        float survivalTime = GameManager.Instance.SurvivalTime;
+        if (survivalTime >= 900f)
+        {
+            _survivalTimeText.text = "Wowowowowoowowo";
+        }
+        else
+        {
+            int minutes = Mathf.FloorToInt(survivalTime / 60);
+            int seconds = Mathf.FloorToInt(survivalTime % 60);
+            _survivalTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
     }
 }

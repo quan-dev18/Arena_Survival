@@ -513,9 +513,14 @@ MonoBehaviour:
   maxHealth: 100
   moveSpeed: 5
   damage: 10
-  _attackRange: 1.5
+  damageVariance: 0.3
+  _attackRange: 2
   _knockbackForce: 20
   _fadeDuration: 0.5
+  _minOrbs: 2
+  _maxOrbs: 8
+  _expOrbValue: 10
+  _poolTag: Enemy
   _animator: {fileID: -8317553425311743804}
 --- !u!114 &-5985742086993755652
 MonoBehaviour:

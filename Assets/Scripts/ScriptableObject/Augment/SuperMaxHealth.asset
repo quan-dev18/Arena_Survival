@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0d8e5860e5959ec3b831b28c3ff9dd5, type: 3}
-  m_Name: SuperAtKSpeed
+  m_Name: SuperMaxHealth
   m_EditorClassIdentifier: Assembly-CSharp::AugmentData
-  augmentName: 100% ATK SPEED
-  type: 4
+  augmentName: +100% Max Health
+  type: 1
   value: 100
   spawnWeight: 0.01

@@ -15,4 +15,4 @@ MonoBehaviour:
   augmentName: 10 Bullet Count
   type: 5
   value: 10
-  spawnWeight: 0.1
+  spawnWeight: 0.01

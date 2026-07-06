@@ -15,6 +15,6 @@ MonoBehaviour:
   weaponName: YellowBulet
   bulletTag: Bullet
   fireRate: 0.8
-  detectRange: 15
+  detectRange: 10
   bulletCount: 1
-  spreadAngle: 2
+  spreadAngle: 10

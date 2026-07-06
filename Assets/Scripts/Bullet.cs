@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    public static float EnemySpeedMultiplier = 1f;
+
     [Header("Stats")]
     [SerializeField] private float _speed = 20f;
     [SerializeField] private float _damage = 10f;
@@ -32,7 +34,8 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        float moveDistance = _speed * Time.deltaTime;
+        float speed = _isEnemyBullet ? _speed * EnemySpeedMultiplier : _speed;
+        float moveDistance = speed * Time.deltaTime;
 
         if (RaycastHitTarget(moveDistance))
             return;

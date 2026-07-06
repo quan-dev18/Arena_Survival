@@ -19,6 +19,8 @@ public class EnemyChase : EnemyBase
     [SerializeField] private int _maxOrbs = 10;
     [SerializeField] private float _expOrbValue = 10f;
 
+    [SerializeField] protected string _poolTag = "Enemy";
+
     protected NavMeshAgent   _agent;
     protected Transform      _target;
     private SlashComboAttack _combo;
@@ -31,14 +33,19 @@ public class EnemyChase : EnemyBase
 
     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
         _agent = GetComponent<NavMeshAgent>();
         _combo = GetComponent<SlashComboAttack>();
         _animator = GetComponent<Animator>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _mpb = new MaterialPropertyBlock();
+    }
+
+    protected override void Start()
+    {
+        base.Start();
         _agent.speed = moveSpeed;
         FindTarget();
     }
@@ -52,6 +59,7 @@ public class EnemyChase : EnemyBase
         if (_agent != null)
         {
             _agent.isStopped = false;
+            _agent.speed = moveSpeed;
             _agent.ResetPath();
         }
 
@@ -105,6 +113,11 @@ public class EnemyChase : EnemyBase
         _agent.isStopped = false;
         _agent.speed     = moveSpeed;
         _agent.SetDestination(_target.position);
+    }
+
+    public virtual void ApplyAttackSpeedMultiplier(float multiplier)
+    {
+        _combo?.ApplySpeedMultiplier(multiplier);
     }
 
     protected virtual void Attack()
@@ -162,7 +175,7 @@ public class EnemyChase : EnemyBase
 
         _deathRoutine = null;
         SpawnExpOrbs();
-        ObjectPool.Instance.ReturnToPool("Enemy", gameObject);
+        ObjectPool.Instance.ReturnToPool(_poolTag, gameObject);
     }
 
     private void SpawnExpOrbs()

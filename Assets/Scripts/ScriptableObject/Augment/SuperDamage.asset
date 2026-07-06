@@ -15,4 +15,4 @@ MonoBehaviour:
   augmentName: 100% Damage
   type: 3
   value: 100
-  spawnWeight: 0.1
+  spawnWeight: 0.01

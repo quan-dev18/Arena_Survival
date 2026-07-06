@@ -15,4 +15,4 @@ MonoBehaviour:
   augmentName: +5% ATK SPEED
   type: 4
   value: 5
-  spawnWeight: 2
+  spawnWeight: 1

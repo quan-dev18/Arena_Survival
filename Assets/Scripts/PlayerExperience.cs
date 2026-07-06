@@ -9,8 +9,15 @@ public class PlayerExperience : MonoBehaviour
     [SerializeField] private float _collectDistance = 0.5f;
 
     [Header("Level Settings")]
-    [SerializeField] private int _baseXPToLevel = 100;
-    [SerializeField] private AnimationCurve _levelCurve = AnimationCurve.Linear(1, 1, 100, 10);
+    [SerializeField] private int _baseXPToLevel = 200;
+    [SerializeField] private AnimationCurve _levelCurve = new AnimationCurve(
+        new Keyframe(1, 1),
+        new Keyframe(10, 2f),
+        new Keyframe(25, 5f),
+        new Keyframe(50, 15f),
+        new Keyframe(75, 40f),
+        new Keyframe(100, 80f)
+    );
 
     private float _currentXP;
     private int _currentLevel = 1;

@@ -8,11 +8,25 @@ public class EnemyRanged : EnemyChase
     [SerializeField] private float _fireRate = 1f;
 
     private float _fireTimer;
+    private float _originalFireRate;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _poolTag = "EnemyRanged";
+        _originalFireRate = _fireRate;
+    }
 
     public override void OnSpawn()
     {
         base.OnSpawn();
         _fireTimer = 0f;
+    }
+
+    public override void ApplyAttackSpeedMultiplier(float multiplier)
+    {
+        base.ApplyAttackSpeedMultiplier(multiplier);
+        _fireRate = _originalFireRate * multiplier;
     }
 
     protected override void Attack()

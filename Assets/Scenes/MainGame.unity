@@ -443,7 +443,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &152965859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2240,10 +2240,10 @@ RectTransform:
   - {fileID: 2143630730}
   m_Father: {fileID: 989763039}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 960, y: -540}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &946587147
 MonoBehaviour:
@@ -3117,10 +3117,10 @@ RectTransform:
   - {fileID: 1824626294}
   m_Father: {fileID: 989763039}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1360, y: -540}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1205013319
 MonoBehaviour:
@@ -3234,7 +3234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   _inputManager: {fileID: 348010471}
-  _eventInterval: 90
+  _eventInterval: 80
   _difficultyCurve:
     serializedVersion: 2
     m_Curve:
@@ -3324,8 +3324,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69bc13d98ab1eb42c896259d21c24376, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  _spawnInterval: 6
-  _maxEnemyAlive: 20
+  _spawnInterval: 4
+  _maxEnemyAlive: 25
   _spawnPoints:
   - {fileID: 612818273}
   - {fileID: 60732211}
@@ -3335,10 +3335,16 @@ MonoBehaviour:
   - {fileID: 597339671}
   - {fileID: 2118721761}
   - {fileID: 1078662083}
+  _spawnRadius: 10
   _meleePerRanged: 5
   _rangedTag: EnemyRanged
   _intervalDecreaseRate: 0.05
   _minSpawnInterval: 0.3
+  _statsMultiplier: 1
+  _statsIncreasePerMinute: 0.15
+  _statsIncreasePerMinuteLate: 2
+  _lateMinuteThreshold: 10
+  _lateGameBurstMultiplier: 3
 --- !u!114 &1328051890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3363,6 +3369,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6d1db839f2c54aa1698265fc055064ab, type: 2}
   - {fileID: 11400000, guid: 2d53c785e0374bf5f8a2475c81e44c0a, type: 2}
   - {fileID: 11400000, guid: 2e78beff601b8f5eab9904bd3aaef5bc, type: 2}
+  - {fileID: 11400000, guid: 3492bb2a27191848a86b3f5ec3577d22, type: 2}
   _optionsPerLevel: 3
   _selectionUI: {fileID: 152965859}
 --- !u!1 &1402291877
@@ -3901,7 +3908,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1647269182
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4990,10 +4997,10 @@ RectTransform:
   - {fileID: 1792189109}
   m_Father: {fileID: 989763039}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 560, y: -540}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1987441857
 MonoBehaviour:
