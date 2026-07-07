@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41dc32b9ccbe4d3c08c95303f37ff216, type: 3}
   m_Name: Bullet
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  weaponName: YellowBulet
+  weaponName: ShotGun
   bulletTag: Bullet
-  fireRate: 0.8
+  fireRate: 1
   detectRange: 10
   bulletCount: 1
   spreadAngle: 10

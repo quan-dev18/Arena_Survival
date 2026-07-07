@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5158657733876622668}
   - component: {fileID: 3544021701823632046}
   - component: {fileID: 851039432494553130}
-  - component: {fileID: 1296833719712013206}
   - component: {fileID: -1127371453550591708}
   m_Layer: 0
   m_Name: Bullet
@@ -92,29 +91,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1296833719712013206
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3288108062506453789}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!114 &-1127371453550591708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,11 +107,5 @@ MonoBehaviour:
   _damage: 10
   _damageVariance: 0.3
   _lifetime: 3
-  _targetLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  _wallLayer:
-    serializedVersion: 2
-    m_Bits: 128
   _isEnemyBullet: 0
   _poolTag: Bullet

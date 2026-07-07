@@ -30,6 +30,8 @@ public class AugmentManager : MonoBehaviour
     private float _maxHealthPercent;
     private float _collectionRadiusPercent;
 
+    public bool IsSelecting { get; private set; }
+
     private void Start()
     {
         _playerController = FindAnyObjectByType<PlayerController>();
@@ -46,16 +48,23 @@ public class AugmentManager : MonoBehaviour
 
         if (_playerExperience != null)
             _playerExperience.OnLevelUp += OnPlayerLevelUp;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGameOver += OnGameOver;
     }
 
     private void OnDestroy()
     {
         if (_playerExperience != null)
             _playerExperience.OnLevelUp -= OnPlayerLevelUp;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGameOver -= OnGameOver;
     }
 
     private void OnPlayerLevelUp(int level)
     {
+        IsSelecting = true;
         Time.timeScale = 0f;
         AugmentData[] options = GetRandomOptions(_optionsPerLevel);
         _selectionUI.Show(options, OnAugmentSelected);
@@ -63,8 +72,20 @@ public class AugmentManager : MonoBehaviour
 
     private void OnAugmentSelected(AugmentData augment)
     {
+        IsSelecting = false;
+        _selectionUI.Hide();
+
+        if (GameManager.Instance.CurrentState == GameManager.GameState.GameOver)
+            return;
+
         ApplyAugment(augment);
         Time.timeScale = 1f;
+    }
+
+    private void OnGameOver()
+    {
+        IsSelecting = false;
+        _selectionUI.Hide();
     }
 
     // Lay N augment ngau nhien theo weight tu danh sach

@@ -34,9 +34,14 @@ public class AugmentSelectionUI : MonoBehaviour
         }
     }
 
-    private void OnOptionClicked(AugmentData augment)
+    public void Hide()
     {
         _panel.SetActive(false);
+    }
+
+    private void OnOptionClicked(AugmentData augment)
+    {
+        Hide();
         _onSelected?.Invoke(augment);
     }
 
